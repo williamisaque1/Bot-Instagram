@@ -176,7 +176,7 @@ async function botStart() {
         //  document.querySelector("div.PZuss li:nth-child(46) div >  div  a.FPmhX.notranslate._0imsa ")
         nestedHandles.forEach(async (handle, index) => {
           setTimeout(async () => {
-            console.log("esse e o index", index);
+            // console.log("esse e o index", index);
             let nome = await handle.$("div >  div  a.FPmhX.notranslate._0imsa");
             let textButton = await handle.$("div > div button");
 
@@ -190,10 +190,15 @@ async function botStart() {
             if (res.indexOf("Seguir") !== -1) {
               await page.waitForSelector("button.sqdOP.L3NKy");
               console.log(
-                "\n-------------------------------------------\n iniciando a captura de seguidores do perfil " +
-                  perfil1
+                "\n-------------------------------------------\n iniciando a captura de seguidores do perfil "
               );
-              console.log("iniciando clique nos seguidores ");
+              console.log(
+                `você esta seguindo o perfil de ${res.replace(
+                  "Seguir",
+                  ""
+                )}\n -------------------------------------------\n `
+              );
+
               /* await textButton.click({
                 delay: index * 2000,
               });*/
@@ -203,19 +208,15 @@ async function botStart() {
                 { delay: 2000 }
               );
 
-              console.log(
-                `você esta seguindo o perfil de ${res.replace(
-                  "Seguir",
-                  ""
-                )}\n -------------------------------------- `
-              );
               await page.waitForTimeout(1000);
             } else if (res.indexOf("Seguindo") !== -1) {
               console.log(
-                "iniciando a exclusão de seguidores antigos " + perfil1
+                " \n-------------------------------------- \niniciando a exclusão de seguidores antigos "
               );
               console.log(
-                "\n -------------------------------------- \nclicando nos seguidores antigos"
+                "deletando seguidor " +
+                  res.replace("Seguindo", "") +
+                  "\n--------------------------------------\n "
               );
               await page.click(
                 `div.PZuss li:nth-of-type(${index + 1}) div > div button`,
@@ -224,39 +225,31 @@ async function botStart() {
 
               await page.waitForSelector("button.aOOlW.-Cab_");
 
-              console.log(
-                "deletando seguidores " +
-                  res.replace("Seguindo", "") +
-                  "\n -------------------------------------- \n"
-              );
-
               await page.click("div > button.aOOlW.-Cab_", { delay: 2000 });
               await page.waitForSelector(`button.sqdOP.L3NKy`);
               await page.waitForTimeout(1000);
             } else {
               console.log(
-                "iniciando a exclusão de seguidores antigos " +
-                  perfil1 +
-                  " -------------------------------------- \n"
+                "\n-------------------------------------- \n iniciando a exclusão de solicitações não aceitas "
               );
-              console.log("clicando nas solicitações não aceitas ");
+              console.log(
+                "deletando seguidores " +
+                  res.replace("Solicitado", "") +
+                  "\n---------------------------------------\n "
+              );
               await page.click(
                 `div.PZuss li:nth-of-type(${index + 1}) div > div button`,
                 { delay: 500 }
               );
               await page.waitForSelector("div.mt3GC > button.aOOlW.-Cab_");
-              console.log(
-                "deletando seguidores " +
-                  res.replace("Solicitado", "") +
-                  "\n -------------------------------------- \n"
-              );
+
               await page.click("div.mt3GC > button.aOOlW.-Cab_", {
                 delay: 1000,
               });
               await page.waitForTimeout(1000);
             }
 
-            console.log(`${res}  ${index}  ou  ${index + 1}`);
+            //  console.log(`${res}  ${index}  ou  ${index + 1}`);
           }, index * 6000);
           /*let cont=0;
                    cont++;
