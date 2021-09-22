@@ -12,13 +12,13 @@ async function pageScroll(page) {
     await page.evaluate(async () => {
       await new Promise((resolve, reject) => {
         let alturaTotal = 0;
-        let distancia = 300;
+        let distancia = 50;
         var timer = setInterval(() => {
           document
             .querySelector("body > div.RnEpo.Yx5HN > div > div > div.isgrP")
             .scrollBy(0, distancia);
-          alturaTotal += 100;
-          if (alturaTotal >= 2000) {
+          alturaTotal += 50;
+          if (alturaTotal >= 50) {
             clearInterval(timer);
             resolve();
           }
@@ -141,13 +141,7 @@ async function botStart() {
     // }
 
     if (finishUnfollow) {
-      let totalFollowing = 0;
-      let totalFollowed = 0;
-      let followAnotherProfile = false;
-
       try {
-        // Navegar para pagina e clicar em seguidores
-
         // Navegar para pagina e clicar em seguidores
         await page.goto(`https://www.instagram.com/${perfil1}/`);
 
@@ -164,29 +158,32 @@ async function botStart() {
         console.log("--------------------------------------");
 
         // Seguir perfis
-        //  div.PZuss li:nth-of-type(1) div:nth-of-type(2) a
 
         await page.waitForSelector(`.sqdOP.L3NKy`);
         await pageScroll(page);
         await page.waitForTimeout(6000);
+        //capturar toda a lista de seguidores
         let nestedHandles = await page.$$("div.PZuss li");
         console.log(nestedHandles.length);
-        // document.querySelector("div.PZuss li:nth-of-type(81) div >  div:nth-of-type(2) span > a")
-        // FPmhX notranslate  _0imsa
-        //  document.querySelector("div.PZuss li:nth-child(46) div >  div  a.FPmhX.notranslate._0imsa ")
-        nestedHandles.forEach(async (handle, index) => {
-          setTimeout(async () => {
-            // console.log("esse e o index", index);
-            let nome = await handle.$("div >  div  a.FPmhX.notranslate._0imsa");
-            let textButton = await handle.$("div > div button");
 
-            //      console.log(nome.length);
-            //    console.log(textButton.length);
+        let totalAcoes = 0;
+        let totalDeSeguindo = 0;
+        let totalDeixarDeSeguir = 0;
+        let totalDeSolicitacoesCanceladas = 0;
+        //percorrendo a lista de seguidores
+        nestedHandles.forEach(async (handle, index) => {
+          let time = setTimeout(async () => {
+            //acessando o elemento handledo do nome do perfil do usuario
+            let nome = await handle.$("div >  div  a.FPmhX.notranslate._0imsa");
+            //acessando o elemento handle do texto do botão
+            let textButton = await handle.$("div > div button");
+            //acessando  nome do perfil do usuario e do texto do botão
             let res = await page.evaluate(
               (nm, tb) => `${nm.textContent} ${tb.textContent}`,
               nome,
               textButton
             );
+            // verificando o texto do botao para ver se eu posso seguir esse perfil
             if (res.indexOf("Seguir") !== -1) {
               await page.waitForSelector("button.sqdOP.L3NKy");
               console.log(
@@ -199,16 +196,13 @@ async function botStart() {
                 )}\n -------------------------------------------\n `
               );
 
-              /* await textButton.click({
-                delay: index * 2000,
-              });*/
-
               await page.click(
                 `div.PZuss li:nth-of-type(${index + 1}) div > div button`,
                 { delay: 2000 }
               );
-
+              totalDeSeguindo = totalDeSeguindo + 1;
               await page.waitForTimeout(1000);
+              // verificando o texto do botao para ver se eu posso deixar de seguir esse perfil
             } else if (res.indexOf("Seguindo") !== -1) {
               console.log(
                 " \n-------------------------------------- \niniciando a exclusão de seguidores antigos "
@@ -227,8 +221,10 @@ async function botStart() {
 
               await page.click("div > button.aOOlW.-Cab_", { delay: 2000 });
               await page.waitForSelector(`button.sqdOP.L3NKy`);
+              totalDeixarDeSeguir = totalDeSeguindo + 1;
               await page.waitForTimeout(1000);
             } else {
+              // verificando o texto do botao para ver se eu posso deletar a solicitação pendente do perfil
               console.log(
                 "\n-------------------------------------- \n iniciando a exclusão de solicitações não aceitas "
               );
@@ -247,134 +243,47 @@ async function botStart() {
                 delay: 1000,
               });
               await page.waitForTimeout(1000);
+              totalDeSolicitacoesCanceladas = totalDeSolicitacoesCanceladas + 1;
             }
+            totalAcoes =
+              totalDeSeguindo +
+              totalDeSolicitacoesCanceladas +
+              totalDeixarDeSeguir;
+            // verificando se chegou no ultimo perfil buscado
+            if (index + 1 == nestedHandles.length) {
+              //chamando função para a exibição das informações adquiridas
+              total();
+            }
+            console.log(
+              `esse é o index ${index} esse o tamanho ${
+                nestedHandles.length
+              } essse index + 1 ${index + 1}`
+            );
 
-            //  console.log(`${res}  ${index}  ou  ${index + 1}`);
+            console.log(`Você esta seguindo ${index + 1} pessoas`);
           }, index * 6000);
-          /*let cont=0;
-                   cont++;
-                   document.querySelectorAll('.sqdOP.L3NKy._8A5w5').forEach((valor,indice) => {
-                    setTimeout(() => {console.log("aquii " +valor.innerText)
-                       if(valor.innerText !== 'Seguir'){
-                           valor.click()
-                   document.querySelectorAll('.-Cab_').forEach(valor => {console.log("cheguei")
-                       if(valor.innerText == 'Deixar de seguir') {console.log(valor.innerText)
-                           valor.click();
-                       }	
-                    })
-                   }
-                   console.log("esse  o indice" + indice)
-                   console.log("esse e a conta " + indice*5000)
-                   },indice*5000)
-                   })
-           // }*/
         });
-        /*
-        for (const handle of nestedHandles) {
-          let res = await handle.evaluate((r) => r.innerText);
-          console.log(res);
-        }
-        */
-
-        //  await page.waitForTimeout(10000);
-        /* let c = await page.evaluate((a) => {
-          a.innerText;
-        }, lettagLi);
-        console.log(c);
-        let resp = await page.$eval("div > li:nth-of-type(1)", (a) => {
-          a.innerText;
-          console.log(a.classList);
-        });
+        const total = () => {
+          console.log(
+            `\n ------ acabouuuuuu ------  \n voce seguiu ${totalDeSeguindo} perfils \n
+        deixou de seguir ${totalDeixarDeSeguir} perfils\n
+        ${totalDeSolicitacoesCanceladas} solicitacoes canceladas \n
+        total de acoes feitas ${totalAcoes}
         
-        console.log(resp);
-    
-        /*  let c =  await page.evaluateHandle((a)=> a.length , await  page.$$(`.sqdOP.L3NKy.y3zKF`))
-                console.log(c)
-              await page.evaluate( async () => {
-               
-            let y =  document.querySelectorAll(`.sqdOP.L3NKy.y3zKF`)
-           
-            console.log("iniciando o processo")
-            for (let index = 0; index < y.length; index++) {
-               
-                setTimeout(async () => {
-                   
-                  y[index].click()
-                  console.log(`seguindo ${index + 1} pessoas`);
-                 
-                }, index*8000);
-                
-            }
-        
-                });
-                     */
-        //  if(valueTextButton == 'Seguir') {
-
-        //valueTextButton.click()
-        //await page.click(`.sqdOP.L3NKy.y3zKF`, {delay: 0});
-        // }
-
-        console.log("oiii");
-
-        // await page.waitForSelector(`.sqdOP.L3NKy.y3zKF`);
-        /*
-            let b =   await page.$$eval(`.sqdOP.L3NKy.y3zKF`,((a)=> a.map(w=>w)))
-            b.forEach(async (valueTextButton,index)=>  {
-                console.log(b)
-               console.log( valueTextButton.innerHTML)
-            })*/
-
-        /*   let cont=0;
-                   cont++;
-                   document.querySelectorAll('.sqdOP.L3NKy._8A5w5').forEach((valor,indice) => {
-                    setTimeout(() => {console.log("aquii " +valor.innerText)
-                       if(valor.innerText !== 'Seguir'){
-                           valor.click()
-                   document.querySelectorAll('.-Cab_').forEach(valor => {console.log("cheguei")
-                       if(valor.innerText == 'Deixar de seguir') {console.log(valor.innerText)
-                           valor.click();
-                       }	
-                    })
-                   }
-                   console.log("esse  o indice" + indice)
-                   console.log("esse e a conta " + indice*5000)
-                   },indice*5000)
-                   })
-           // }
-document.querySelectorAll('.sqdOP.L3NKy.y3zKF').forEach((valor, indice) => {
-  	setTimeout(() => {
-          console.log("deixando de seguir " + indice + " pessoas")
-		if(!valor.classList.contains('._8A5w5')){
-			valor.click();
-		
-					console.log(` ${cont} pessoas seguidas`);
-					valor.click();
-        }
-    }, indice*5000)
-        
-		
-       // console.log("esse  o indice" + indice)
-        //console.log("esse e a conta " + indice*6000)
-        */
-
-        //;
-        //});
+        \n-----------------------------`
+          );
+        };
       } catch (err) {
         //  await browser.close();
-        console.log("pupetter encerado com suecesso");
-        // console.log(err);
+        console.log("pupetter encerado com suecesso45");
+        console.log(err);
 
         if (!error) {
           //  initBot();
           // await browser.close();
         }
         error = true;
-      } finally {
-        //  await browser.close();
-        console.log("pupetter encerado com suecesso");
       }
-
-      console.log("Seguiu até agora no  " + totalFollowed);
     }
   } else {
     try {
@@ -426,29 +335,3 @@ function initBot() {
 }
 initBot();
 setInterval(initBot, 1200000);
-
-//outro metodo possivel
-/*
-                    console.log(v)
-                v.forEach(async (valueTextButton,index)=>  {
-                    console.log(valueTextButton)
-                   // await page.waitForSelector(`.sqdOP.L3NKy.y3zKF`)
-                   console.log(index)
-                   console.log("|" +valueTextButton+ "|")
-                  
-                   if(valueTextButton == 'Seguir') {
-                       
-                          await page.click(`.sqdOP.L3NKy.y3zKF`, {delay: 0});
-console.log("cliquei")
-                  //  await page.waitForTimeout(5000)
-                          
-                          totalFollowed = totalFollowed + 1;
-                          console.log('Seguiu um total de  neste perfil');
-                          console.log('Seguiu até agora no : '+totalFollowed);
-                          botFollowed = botFollowed+1;
-                          
-                         // '.sqdOP.L3NKy.y3zKF'
-                      
-                      }
-               })
-               */
