@@ -12,13 +12,13 @@ async function pageScroll(page) {
     await page.evaluate(async () => {
       await new Promise((resolve, reject) => {
         let alturaTotal = 0;
-        let distancia = 50;
+        let distancia = 100;
         var timer = setInterval(() => {
           document
             .querySelector("body > div.RnEpo.Yx5HN > div > div > div.isgrP")
             .scrollBy(0, distancia);
-          alturaTotal += 50;
-          if (alturaTotal >= 50) {
+          alturaTotal += 100;
+          if (alturaTotal >= 100) {
             clearInterval(timer);
             resolve();
           }
@@ -50,7 +50,7 @@ async function botStart() {
   // ========================================
 
   const browser = await puppeteer.launch({
-    headless: false,
+    //headless: false,
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
@@ -178,6 +178,13 @@ async function botStart() {
             //acessando o elemento handle do texto do botão
             let textButton = await handle.$("div > div button");
             //acessando  nome do perfil do usuario e do texto do botão
+            /* await fs.writeFileSync(
+              "./info.csv",
+              `Numeros:\n${totalDeSeguindo}`
+            );*/
+            let a = await fs.createWriteStream("dados.xls");
+            a.write(`perfil \t estado\n`);
+
             let res = await page.evaluate(
               (nm, tb) => `${nm.textContent} ${tb.textContent}`,
               nome,
@@ -201,6 +208,7 @@ async function botStart() {
                 { delay: 2000 }
               );
               totalDeSeguindo = totalDeSeguindo + 1;
+              // a.write(`${res.replace("Seguir", "")} \t Seguir\n`);
               await page.waitForTimeout(1000);
               // verificando o texto do botao para ver se eu posso deixar de seguir esse perfil
             } else if (res.indexOf("Seguindo") !== -1) {
@@ -221,6 +229,8 @@ async function botStart() {
 
               await page.click("div > button.aOOlW.-Cab_", { delay: 2000 });
               await page.waitForSelector(`button.sqdOP.L3NKy`);
+              // a.write(`${res.replace("Seguindo", "")} \t Seguindo\n`);
+
               totalDeixarDeSeguir = totalDeSeguindo + 1;
               await page.waitForTimeout(1000);
             } else {
@@ -249,21 +259,18 @@ async function botStart() {
               totalDeSeguindo +
               totalDeSolicitacoesCanceladas +
               totalDeixarDeSeguir;
+            //  a.write(`${res.replace("Solicitado", "")} \t Solicitado\n`);
             // verificando se chegou no ultimo perfil buscado
             if (index + 1 == nestedHandles.length) {
               //chamando função para a exibição das informações adquiridas
               total();
+              // a.close();
             }
-            console.log(
-              `esse é o index ${index} esse o tamanho ${
-                nestedHandles.length
-              } essse index + 1 ${index + 1}`
-            );
 
             console.log(`Você esta seguindo ${index + 1} pessoas`);
           }, index * 6000);
         });
-        const total = () => {
+        const total = async () => {
           console.log(
             `\n ------ acabouuuuuu ------  \n voce seguiu ${totalDeSeguindo} perfils \n
         deixou de seguir ${totalDeixarDeSeguir} perfils\n
@@ -272,6 +279,10 @@ async function botStart() {
         
         \n-----------------------------`
           );
+
+          await page.deleteCookie();
+          await page.close();
+          await browser.close();
         };
       } catch (err) {
         //  await browser.close();
