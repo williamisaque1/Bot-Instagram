@@ -138,6 +138,10 @@ io.on("connection", async (socket) => {
   socket.on("ativar", async () => await botStart());
 
   async function botStart() {
+    let existe = await fs.existsSync(`${__dirname}/infHack.xlsx`);
+    if (existe) {
+      fs.unlink(`${__dirname}/infHack.xlsx`);
+    }
     console.log("iniciado");
     let error = false;
 
