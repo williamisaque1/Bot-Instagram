@@ -424,6 +424,7 @@ io.on("connection", async (socket) => {
         await page.goto("https://www.instagram.com/");
         console.log("naveguei");
         await page.waitForNavigation("https://www.instagram.com/");
+        console.log("to aqui");
         // Autenticacao
         await page.waitForSelector('input[name="username"]', { visible: true });
         console.log("colocando nome");
