@@ -166,6 +166,7 @@ io.on("connection", async (socket) => {
 
     // Verificar se cookie existe
     const arquivo = await fs.existsSync("./cookies.json");
+    console.log("este é o arqiovo |||||||||||||||||||" + arquivo);
     if (arquivo) {
       console.log("================= Cookie encontrado ==================");
       socket.emit("cookie", "encontrado");
@@ -419,6 +420,7 @@ io.on("connection", async (socket) => {
         console.log(
           "================= Cookie não encontrado =================="
         );
+        socket.emit("cookie", "não encontrado");
         await page.goto("https://www.instagram.com/");
 
         // Autenticacao
@@ -450,10 +452,11 @@ io.on("connection", async (socket) => {
           "./cookies.json",
           JSON.stringify(cookies, null, 2)
         );
+        socket.emit("cookie", "escrevendo cookie");
         await page.deleteCookie();
         await page.close();
         await browser.close();
-        initBot();
+        await botStart();
       } catch (err) {
         await browser.close();
         initBot();

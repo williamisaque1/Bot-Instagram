@@ -1,4 +1,5 @@
 node_modules
-
-
+cookies.json
+auth-info.json
+profiles.json
 README.md
