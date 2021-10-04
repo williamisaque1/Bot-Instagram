@@ -425,7 +425,7 @@ io.on("connection", async (socket) => {
         console.log("naveguei");
 
         // Autenticacao
-        await page.waitFor('input[name="username"]');
+        await page.waitForSelector('input[name="username"]');
         console.log("colocando nome");
         await page.type('input[name="username"]', user, { delay: 100 });
         await page.type('input[name="password"]', password, { delay: 100 });
@@ -464,7 +464,7 @@ io.on("connection", async (socket) => {
       } catch (err) {
         await browser.close();
         console.log("erroo aquiii");
-        initBot();
+        await botStart();
       }
     }
   }
