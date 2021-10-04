@@ -422,12 +422,15 @@ io.on("connection", async (socket) => {
         );
         socket.emit("cookie", "não encontrado");
         await page.goto("https://www.instagram.com/");
+        console.log("naveguei");
 
         // Autenticacao
         await page.waitFor('input[name="username"]');
+        console.log("colocando nome");
         await page.type('input[name="username"]', user, { delay: 100 });
         await page.type('input[name="password"]', password, { delay: 100 });
         await page.keyboard.press("Enter");
+        console.log("apertei enter");
 
         // Salvar info de login
         await page.waitForSelector(
@@ -444,6 +447,7 @@ io.on("connection", async (socket) => {
         await page.click(
           "body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.HoLwm"
         );
+        console.log("cliquei");
 
         // Salvar cookies
         const cookies = await page.cookies();
@@ -459,6 +463,7 @@ io.on("connection", async (socket) => {
         await botStart();
       } catch (err) {
         await browser.close();
+        console.log("erroo aquiii");
         initBot();
       }
     }
