@@ -36,13 +36,14 @@ function envioDeDados(seguir, seguidores, solicitacao) {
   });
   seguir.forEach((inf) => {
     ws.cell(nLinha1++, 1).string(inf);
-    seguidores.forEach((inf2) => {
-      ws.cell(nLinha2++, 2).string(inf2);
-      solicitacao.forEach((inf3) => {
-        ws.cell(nLinha3++, 3).string(inf3);
-      });
-    });
   });
+  seguidores.forEach((inf2) => {
+    ws.cell(nLinha2++, 2).string(inf2);
+  });
+  solicitacao.forEach((inf3) => {
+    ws.cell(nLinha3++, 3).string(inf3);
+  });
+
   wb.write("infHack.xlsx");
 }
 async function pageScroll(page) {
@@ -56,7 +57,7 @@ async function pageScroll(page) {
             .querySelector("body > div.RnEpo.Yx5HN > div > div > div.isgrP")
             .scrollBy(0, distancia);
           alturaTotal += 50;
-          if (alturaTotal >= 50) {
+          if (alturaTotal >= 100) {
             clearInterval(timer);
             resolve();
           }
@@ -170,7 +171,7 @@ io.on("connection", async (socket) => {
     // ========================================
 
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       args: ["--disable-setuid-sandbox", "--no-sandbox"],
     });
     const page = await browser.newPage();
@@ -290,14 +291,14 @@ io.on("connection", async (socket) => {
           let totalDeixarDeSeguir = 0;
           let totalDeSolicitacoesCanceladas = 0;
           //percorrendo a lista de seguidores
-          nestedHandles.forEach(async (handle, index) => {
+          for (let index = 0; index < 12; index++) {
             let time = setTimeout(async () => {
               //acessando o elemento handledo do nome do perfil do usuario
-              let nome = await handle.$(
+              let nome = await nestedHandles[index].$(
                 "div >  div  a.FPmhX.notranslate._0imsa"
               );
               //acessando o elemento handle do texto do botão
-              let textButton = await handle.$("div > div button");
+              let textButton = await nestedHandles[index].$("div > div button");
               //acessando  nome do perfil do usuario e do texto do botão
               /* await fs.writeFileSync(
               "./info.csv",
@@ -389,7 +390,7 @@ io.on("connection", async (socket) => {
                 totalDeixarDeSeguir;
 
               // verificando se chegou no ultimo perfil buscado
-              if (index + 1 == nestedHandles.length) {
+              if (index + 1 == 12) {
                 //chamando função para a exibição das informações adquiridas
                 total();
                 envioDeDados(seguir, seguindo, solicitacoes);
@@ -397,7 +398,8 @@ io.on("connection", async (socket) => {
               socket.emit("indice", index + 1);
               console.log(`Você esta seguindo ${index + 1} pessoas`);
             }, index * 6000);
-          });
+          }
+
           const total = async () => {
             console.log(
               `\n ------ acabouuuuuu ------  \n
@@ -433,17 +435,25 @@ io.on("connection", async (socket) => {
         );
         socket.emit("cookie", "não encontrado");
         await page.goto("https://www.instagram.com/");
+
         console.log("naveguei");
-        await page.waitForNavigation("https://www.instagram.com/");
-        console.log("to aqui");
+
         // Autenticacao
-        await page.waitForSelector('input[name="username"]', { visible: true });
+        await page.waitForSelector('input[name="username"]');
         console.log("colocando nome");
         await page.type('input[name="username"]', user, { delay: 100 });
         await page.type('input[name="password"]', password, { delay: 100 });
         await page.keyboard.press("Enter");
         console.log("apertei enter");
+        await page.waitForTimeout(500);
+        if (await page.$("p#slfErrorAlert")) {
+          console.log("algo deu de errado");
 
+          socket.emit("erroDeAutenticação", "Senha ou email incorretos");
+          await page.deleteCookie();
+          await page.close();
+          await browser.close();
+        }
         // Salvar info de login
         await page.waitForSelector(
           "#react-root > section > main > div > div > div > section > div > button"
@@ -471,7 +481,6 @@ io.on("connection", async (socket) => {
         socket.emit("cookie", "escrevendo cookie");
         await page.deleteCookie();
         await page.close();
-        await browser.close();
         await botStart();
       } catch (err) {
         await browser.close();
