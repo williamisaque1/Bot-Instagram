@@ -139,8 +139,15 @@ io.on("connection", async (socket) => {
 
   async function botStart() {
     let existe = await fs.existsSync(`${__dirname}/infHack.xlsx`);
+    console.log("existe ?" + existe);
     if (existe) {
-      fs.unlink(`${__dirname}/infHack.xlsx`);
+      fs.unlink(`${__dirname}/infHack.xlsx`, (err) => {
+        if (err) {
+          console.log("erro ao apagar");
+        } else {
+          console.log("apagado com sucesso");
+        }
+      });
     }
     console.log("iniciado");
     let error = false;
