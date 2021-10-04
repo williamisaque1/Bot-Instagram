@@ -165,13 +165,13 @@ io.on("connection", async (socket) => {
     const page = await browser.newPage();
 
     // Verificar se cookie existe
-    const arquivo = await fs.existsSync("./cookies.json");
+    const arquivo = await fs.existsSync(`${__dirname}/cookies.json`);
     console.log("este é o arqiovo |||||||||||||||||||" + arquivo);
     if (arquivo) {
       console.log("================= Cookie encontrado ==================");
       socket.emit("cookie", "encontrado");
       // Reutilizar cookies
-      const cookiesString = await fs.readFileSync("./cookies.json");
+      const cookiesString = await fs.readFileSync(`${__dirname}/cookies.json`);
       const cookies = JSON.parse(cookiesString);
       // console.log(cookies)
       await page.setCookie(...cookies);
