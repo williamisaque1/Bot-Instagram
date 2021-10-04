@@ -423,9 +423,9 @@ io.on("connection", async (socket) => {
         socket.emit("cookie", "não encontrado");
         await page.goto("https://www.instagram.com/");
         console.log("naveguei");
-
+        await page.waitForNavigation("https://www.instagram.com/");
         // Autenticacao
-        await page.waitForSelector('input[name="username"]');
+        await page.waitForSelector('input[name="username"]', { visible: true });
         console.log("colocando nome");
         await page.type('input[name="username"]', user, { delay: 100 });
         await page.type('input[name="password"]', password, { delay: 100 });
@@ -464,7 +464,7 @@ io.on("connection", async (socket) => {
       } catch (err) {
         await browser.close();
         console.log("erroo aquiii");
-        await botStart();
+        // await botStart();
       }
     }
   }
