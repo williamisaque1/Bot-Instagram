@@ -145,7 +145,7 @@ io.on("connection", async (socket) => {
         if (err) {
           console.log("erro ao apagar");
         } else {
-          console.log("apagado com sucesso");
+          console.log("apagado com sucesso!");
         }
       });
     }
