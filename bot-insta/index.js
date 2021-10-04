@@ -88,13 +88,13 @@ app.get("/enviodeemail", function (req, res) {
       subject: "testando envio de email com nodejs",
       text: "teste12345678910",
       html: "<h1>bem vindo</h1><img  width='500' height='350' src='https://img-21.ccm2.net/vqxkOOu5Y9FfSDxU-Ix28E3lG_s=/500x/6aba6cbadb384fad96232e2f44215721/ccm-faq/123rf_kaspri.jpg'/>",
-      attachments: [
+      /*attachments: [
         {
           filename: "PlanilhaDosDados.xlsx",
           path: `${__dirname}/infHack.xlsx`,
           cid: "nyan@example.com", // should be as unique as possible
         },
-      ],
+      ],*/
     })
     .then((dados) => {
       res.send("email enviado com sucesso");
