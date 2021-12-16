@@ -171,7 +171,7 @@ io.on("connection", async (socket) => {
     // ========================================
 
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: ["--disable-setuid-sandbox", "--no-sandbox"],
     });
     const page = await browser.newPage();
