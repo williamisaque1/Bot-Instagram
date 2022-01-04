@@ -2,7 +2,7 @@
 
 (apenas para estudo)
 
-É uma automação de navegador, utilizando a biblioteca puppeteer, com o intuito de atrair mais seguidores para o seu perfil do instagram. Ela é ideal para quem quer conquistar seus primeiros 1000 seguidores para dar um ótimo "start" no seus objetivos com o Instagram.
+É uma automação de navegador, utilizando a biblioteca puppeteer do Node js, com o intuito de atrair mais seguidores para o seu perfil do instagram. Ela é ideal para quem quer conquistar seus primeiros 1000 seguidores para dar um ótimo "start" no seus objetivos com o Instagram.
 
 ---
 ## Dicas de uso:
